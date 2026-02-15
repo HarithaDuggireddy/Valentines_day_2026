@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Valentine Surprise 💖</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to top, #ff758c, #ff7eb3);
+            font-family: 'Pacifico', cursive;
+            text-align: center;
+        }
+
+        /* 3D Realistic Balloons */
+        .balloon {
+            position: absolute;
+            width: 150px;
+            height: 200px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            cursor: pointer;
+            background: radial-gradient(circle at 30% 30%, #ff4d4d, #b30000);
+            box-shadow: inset -10px -10px 20px rgba(255,255,255,0.3), 0 8px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            background: #b30000;
+            border-radius: 50%;
+        }
+
+        @keyframes float {
+            0%,100% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        /* Hearts */
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { top: -10%; opacity: 1; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        /* Butterflies */
+        .butterfly {
+            position: absolute;
+            font-size: 30px;
+            animation: fly linear infinite;
+        }
+
+        @keyframes fly {
+            0% { left: -10%; }
+            100% { left: 110%; }
+        }
+
+        /* Fade-in for photo */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Watermark moving animation */
+        @keyframes moveWatermark {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Paper/confetti animation fallback (optional) */
+        @keyframes fallPaper {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(200px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background music -->
+<audio id="bgmusic" src="music.mp3" loop></audio>
+
+<script>
+const images = [
+    "photo1.jpg",
+    "photo2.jpg",
+    "photo3.jpg",
+    "photo4.jpg",
+    "photo5.jpg"
+];
+
+let poppedCount = 0;
+let musicStarted = false;
+
+/* Create 5 Balloons */
+for (let i = 0; i < 5; i++) {
+    const balloon = document.createElement("div");
+    balloon.className = "balloon";
+    balloon.style.left = (10 + i*15) + "%";
+    balloon.style.top = "30%";
+
+    balloon.onclick = function() {
+        // Start background music once
+        if (!musicStarted) {
+            document.getElementById("bgmusic").play();
+            musicStarted = true;
+        }
+
+        // Balloon pop sound
+        const popSound = new Audio("pop.mp3");
+        popSound.play();
+
+        // Show full screen photo
+        showPhoto(images[i]);
+        // Remove balloon
+        balloon.remove();
+        poppedCount++;
+
+        // Realistic confetti burst
+        createConfetti(balloon.style.left, balloon.style.top);
+
+        if (poppedCount === 5) {
+            showFinalSurprise();
+        }
+    };
+
+    document.body.appendChild(balloon);
+}
+
+/* Show individual photo with BIG watermark */
+function showPhoto(src) {
+    const container = document.createElement("div");
+    container.style.position = "fixed";
+    container.style.top = "0";
+    container.style.left = "0";
+    container.style.width = "100vw";
+    container.style.height = "100vh";
+    container.style.backgroundColor = "black";
+    container.style.display = "flex";
+    container.style.justifyContent = "center";
+    container.style.alignItems = "center";
+    container.style.zIndex = "5";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "contain";
+    img.style.animation = "fadeIn 1s ease-in-out";
+
+    // BIG watermark
+    const watermark = document.createElement("div");
+    watermark.innerHTML = "Happy Valentine’s Day My Love 💖";
+    watermark.style.position = "absolute";
+    watermark.style.fontSize = "60px";
+    watermark.style.fontWeight = "bold";
+    watermark.style.color = "rgba(255,255,255,0.5)";
+    watermark.style.whiteSpace = "nowrap";
+    watermark.style.top = "50%";
+    watermark.style.left = "-100%";
+    watermark.style.transform = "translateY(-50%)";
+    watermark.style.zIndex = "6";
+    watermark.style.animation = "moveWatermark 15s linear infinite";
+
+    container.appendChild(img);
+    container.appendChild(watermark);
+    document.body.appendChild(container);
+
+    // Remove container after 15 seconds
+    setTimeout(() => container.remove(), 8000);
+}
+
+/* Realistic Confetti / Balloon Burst */
+function createConfetti(x, y) {
+    const balloonX = parseFloat(x);
+    const balloonY = parseFloat(y);
+
+    for (let i = 0; i < 30; i++) {
+        const paper = document.createElement("div");
+        paper.style.position = "absolute";
+        paper.style.width = `${5 + Math.random()*5}px`;
+        paper.style.height = `${5 + Math.random()*5}px`;
+        paper.style.background = ["#FF5C5C","#FFD700","#FF69B4","#ADFF2F","#00FFFF","#FFA500"][Math.floor(Math.random()*6)];
+        paper.style.borderRadius = "2px";
+        paper.style.left = x;
+        paper.style.top = y;
+        paper.style.opacity = 0.9;
+        paper.style.zIndex = 10;
+
+        document.body.appendChild(paper);
+
+        // Random angle and speed
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = 100 + Math.random() * 100;
+        const gravity = 1 + Math.random();
+
+        let start = null;
+        function animateConfetti(timestamp) {
+            if (!start) start = timestamp;
+            const progress = timestamp - start;
+
+            const dx = Math.cos(angle) * speed * (progress / 1000);
+            const dy = Math.sin(angle) * speed * (progress / 1000) + gravity * (progress / 1000)**2 * 50;
+
+            paper.style.transform = `translate(${dx}px, ${dy}px) rotate(${progress/5}deg)`;
+
+            if (progress < 1500) {
+                requestAnimationFrame(animateConfetti);
+            } else {
+                paper.remove();
+            }
+        }
+
+        requestAnimationFrame(animateConfetti);
+    }
+}
+
+/* Final Gallery with Name & Message */
+function showFinalSurprise() {
+    const audio = document.getElementById("bgmusic");
+    document.body.innerHTML = "";
+    document.body.appendChild(audio);
+
+    const gallery = document.createElement("div");
+    gallery.style.display = "flex";
+    gallery.style.flexWrap = "wrap";
+    gallery.style.justifyContent = "center";
+    gallery.style.alignItems = "center";
+    gallery.style.background = "linear-gradient(to top, #ff758c, #ff7eb3)";
+    gallery.style.minHeight = "30vh";
+    gallery.style.padding = "20px";
+    gallery.style.boxSizing = "border-box";
+    gallery.style.position = "relative";
+    gallery.style.zIndex = 1;
+
+    images.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.style.width = "300px";
+        img.style.margin = "10px";
+        img.style.borderRadius = "20px";
+        img.style.boxShadow = "0 0 20px white";
+
+        const container = document.createElement("div");
+        container.style.position = "relative";
+        container.style.display = "inline-block";
+        container.appendChild(img);
+
+        const watermark = document.createElement("div");
+        watermark.innerHTML = "Happy Valentine’s Day My Love 💖";
+        watermark.style.position = "absolute";
+        watermark.style.fontSize = "30px";
+        watermark.style.fontWeight = "bold";
+        watermark.style.color = "rgba(255,255,255,0.3)";
+        watermark.style.whiteSpace = "nowrap";
+        watermark.style.top = "50%";
+        watermark.style.left = "-100%";
+        watermark.style.transform = "translateY(-50%)";
+        watermark.style.animation = "moveWatermark 10s linear infinite";
+
+        container.appendChild(watermark);
+        gallery.appendChild(container);
+    });
+
+    const name = document.createElement("div");
+    name.style.position = "relative";
+    name.style.zIndex = "2";
+    name.style.width = "100%";
+    name.style.textAlign = "center";
+    name.style.fontSize = "50px";
+    name.style.color = "white";
+    name.style.marginTop = "20px";
+    name.style.textShadow = "0 0 20px white";
+    name.innerHTML = "❤️Bhavani Ashok❤️😘 💖"; // <-- Change name here
+
+    const msg = document.createElement("div");
+    msg.style.position = "relative";
+    msg.style.zIndex = "2";
+    msg.style.width = "100%";
+    msg.style.textAlign = "center";
+    msg.style.fontSize = "40px";
+    msg.style.color = "white";
+    msg.style.marginTop = "10px";
+    msg.innerHTML = "Year over  year, yet it never gets old❤️ <br> Love you more than words can ever express …❤️ <br> A blessing for my life that I cherish everyday ❤️ <br> Thanks for completing me❤️ <br> Happy Valentine’s Day my home❤️ ";
+
+    document.body.appendChild(name);
+    document.body.appendChild(msg);
+    document.body.appendChild(gallery);
+
+    createHearts();
+    createButterflies();
+}
+
+/* Hearts Falling */
+function createHearts() {
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "💖";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.animationDuration = (3 + Math.random()*5) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 8000);
+    }, 300);
+}
+
+/* Butterflies */
+function createButterflies() {
+    for (let i = 0; i < 10; i++) {
+        const butterfly = document.createElement("div");
+        butterfly.className = "butterfly";
+        butterfly.innerHTML = "🦋";
+        butterfly.style.top = Math.random() * 80 + "%";
+        butterfly.style.animationDuration = (4 + Math.random()*5) + "s";
+        document.body.appendChild(butterfly);
+    }
+}
+</script>
+
+</body>
+</html>
